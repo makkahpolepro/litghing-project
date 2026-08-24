@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>تفاصيل عمود الإنارة - {{ pole.pole_ID }}</title>
+    <style>
+        body { font-family: Tahoma, sans-serif; background: #f4f6f9; margin: 0; padding: 20px; }
+        .card { max-width: 600px; margin: auto; background: white; padding: 25px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        h2 { color: #2c3e50; text-align: center; border-bottom: 2px solid #3498db; padding-bottom: 10px; }
+        .info-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #eee; }
+        .label { font-weight: bold; color: #555; }
+        .value { color: #333; }
+        .btn { display: block; text-align: center; background: #3498db; color: white; padding: 12px; text-decoration: none; border-radius: 5px; margin-top: 20px; font-weight: bold; }
+        .btn:hover { background: #2980b9; }
+        .map-link { color: #27ae60; font-weight: bold; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2>معلومات عمود الإنارة</h2>
+        
+        <div class="info-row"><span class="label">معرف العمود (Pole ID):</span><span class="value"><strong>{{ pole.pole_ID }}</strong></span></div>
+        <div class="info-row"><span class="label">ارتفاع العمود:</span><span class="value">{{ pole.Pole_Height or 'غير متوفر' }}</span></div>
+        <div class="info-row"><span class="label">نوع الفانوس (Fixture):</span><span class="value">{{ pole.Fixture_Type or 'غير متوفر' }}</span></div>
+        <div class="info-row"><span class="label">نوع المصباح (Lamp):</span><span class="value">{{ pole.Lamp_Type or 'غير متوفر' }}</span></div>
+        <div class="info-row"><span class="label">حالة العمود:</span><span class="value">{{ pole.Pole_Status or 'سليم' }}</span></div>
+        <div class="info-row"><span class="label">ملاحظات الفني:</span><span class="value">{{ pole.technician_notes or 'لا توجد ملاحظات' }}</span></div>
+        <div class="info-row"><span class="label">الموقع الجغرافي:</span>
+            <span class="value">
+                {% if pole.lat and pole.lng %}
+                    <a href="https://www.google.com/maps?q={{ pole.lat }},{{ pole.lng }}" target="_blank" class="map-link">عرض على خريطة جوجل 📍</a>
+                {% else %}
+                    غير متوفر
+                {% endif %}
+            </span>
+        </div>
+        <div class="info-row"><span class="label">آخر تحديث:</span><span class="value">{{ pole.last_updated }}</span></div>
+
+        <!-- زر دخول الفني لتعديل بيانات العمود وحسابه -->
+        <a href="{{ url_for('technician_login', pole_id=pole.pole_ID) }}" class="btn">🛠️ دخول الفني لتعديل البيانات</a>
+    </div>
+</body>
+</html>

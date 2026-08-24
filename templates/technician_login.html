@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card" style="max-width: 400px; margin: auto;">
+    <h3>دخول فني الصيانة</h3>
+    <form method="POST">
+        <input type="hidden" name="pole_id" value="{{ pole_id }}">
+        <label>اسم المستخدم:</label>
+        <input type="text" name="username" required value="tech">
+        <label>كلمة المرور:</label>
+        <input type="password" name="password" required value="tech123">
+        <button type="submit" class="btn btn-success" style="width: 100%; margin-top: 10px;">دخول</button>
+    </form>
+</div>
+{% endblock %}

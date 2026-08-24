@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h3>لوحة تحكم الإدارة - شبكة أعمدة الإنارة</h3>
+        <a href="{{ url_for('admin_logout') }}" class="btn btn-danger">تسجيل الخروج</a>
+    </div>
+    <hr>
+
+    <!-- قسم إعدادات حساب الإدارة -->
+    <div style="background: #eef2f7; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+        <h4>⚙️ إعدادات حساب المشرف</h4>
+        <form method="POST" style="display: flex; gap: 10px; align-items: center; margin-top: 10px; flex-wrap: wrap;">
+            <input type="hidden" name="action" value="update_admin">
+            <input type="text" name="admin_username" placeholder="اسم المستخدم الجديد" value="{{ admin_info.username }}" required style="flex: 1; min-width: 200px;">
+            <input type="text" name="admin_password" placeholder="كلمة المرور الجديدة" value="{{ admin_info.password }}" required style="flex: 1; min-width: 200px;">
+            <button type="submit" class="btn btn-primary">تحديث بيانات الإدارة</button>
+        </form>
+    </div>
+
+    <!-- قسم إدارة حسابات الفنيين -->
+    <div style="background: #fff8e1; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+        <h4>👷 إدارة حسابات الفنيين الميدانيين</h4>
+        <form method="POST" style="display: flex; gap: 10px; align-items: center; margin-top: 10px; flex-wrap: wrap;">
+            <input type="hidden" name="action" value="add_tech">
+            <input type="text" name="tech_name" placeholder="اسم الفني الكامل" required style="flex: 1; min-width: 150px;">
+            <input type="text" name="tech_username" placeholder="اسم المستخدم للدخول" required style="flex: 1; min-width: 150px;">
+            <input type="text" name="tech_password" placeholder="كلمة المرور" required style="flex: 1; min-width: 150px;">
+            <button type="submit" class="btn btn-success">إضافة فني جديد</button>
+        </form>
+
+        {% if technicians %}
+        <table style="margin-top: 15px; font-size: 0.9rem; background: white;">
+            <thead>
+                <tr>
+                    <th>اسم الفني</th>
+                    <th>اسم المستخدم</th>
+                    <th>كلمة المرور</th>
+                    <th>إجراء</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for tech in technicians %}
+                <tr>
+                    <td>{{ tech.full_name }}</td>
+                    <td>{{ tech.username }}</td>
+                    <td>{{ tech.password }}</td>
+                    <td>
+                        <form method="POST" style="display:inline;" onsubmit="return confirm('هل أنت متأكد من حذف حساب الفني؟');">
+                            <input type="hidden" name="action" value="delete_tech">
+                            <input type="hidden" name="tech_id" value="{{ tech.id }}">
+                            <button type="submit" class="btn btn-danger" style="padding: 2px 6px; font-size: 0.75rem;">حذف</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+    </div>
+    
+    <!-- رفع ملف الـ Excel -->
+    <div style="background: #f1f8f5; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+        <h4>📂 رفع أو تحديث قاعدة بيانات الأعمدة عبر ملف Excel</h4>
+        <form method="POST" enctype="multipart/form-data" style="margin-top: 10px;">
+            <input type="hidden" name="action" value="upload_excel">
+            <input type="file" name="excel_file" accept=".xlsx, .xls" required>
+            <button type="submit" class="btn btn-success" style="margin-top: 5px;">رفع وتحديث البيانات</button>
+        </form>
+    </div>
+
+    <!-- إضافة عمود يدوياً -->
+    <details style="margin-bottom: 20px;">
+        <summary style="cursor: pointer; font-weight: bold; color: var(--secondary-color);">➕ إضافة عمود إنارة جديد يدوياً</summary>
+        <form method="POST" style="margin-top: 10px; display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px;">
+            <input type="hidden" name="action" value="add_pole">
+            <input type="text" name="pole_ID" placeholder="pole_ID" required>
+            <input type="text" name="Pole_Height" placeholder="Pole_Height">
+            <input type="text" name="Fixture_Type" placeholder="Fixture_Type">
+            <input type="text" name="Lamp_Type" placeholder="Lamp_Type">
+            <input type="text" name="Pole_Status" placeholder="Pole_Status" value="سليم">
+            <input type="text" name="lat" placeholder="Latitude">
+            <input type="text" name="lng" placeholder="Longitude">
+            <button type="submit" class="btn btn-primary" style="grid-column: span 1;">حفظ العمود</button>
+        </form>
+    </details>
+
+    <h3>قائمة الأعمدة المسجلة</h3>
+    <form method="GET" style="margin-bottom: 15px; display: flex; gap: 10px;">
+        <input type="text" name="search" placeholder="بحث برقم pole_ID أو نوع المصباح..." value="{{ search }}">
+        <button type="submit" class="btn btn-primary">بحث</button>
+    </form>
+
+    <div style="overflow-x: auto;">
+        <table>
+            <thead>
+                <tr>
+                    <th>pole_ID</th>
+                    <th>Pole_Height</th>
+                    <th>Fixture_Type</th>
+                    <th>Lamp_Type</th>
+                    <th>Pole_Status</th>
+                    <th>Location (Lat, Lng)</th>
+                    <th>الإجراءات</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for pole in poles %}
+                <tr>
+                    <td><strong>{{ pole.pole_ID }}</strong></td>
+                    <td>{{ pole.Pole_Height }}</td>
+                    <td>{{ pole.Fixture_Type }}</td>
+                    <td>{{ pole.Lamp_Type }}</td>
+                    <td>{{ pole.Pole_Status }}</td>
+                    <td>
+                        {% if pole.lat and pole.lng %}
+                            <a href="https://www.google.com/maps?q={{ pole.lat }},{{ pole.lng }}" target="_blank" style="color: #0d6efd; text-decoration: underline;">
+                                {{ pole.lat[:7] }}, {{ pole.lng[:7] }}
+                            </a>
+                        {% else %}
+                            غير متوفر
+                        {% endif %}
+                    </td>
+                    <td>
+                        <form method="POST" style="display:inline;" onsubmit="return confirm('هل أنت متأكد من الحذف؟');">
+                            <input type="hidden" name="action" value="delete_pole">
+                            <input type="hidden" name="pole_ID" value="{{ pole.pole_ID }}">
+                            <button type="submit" class="btn btn-danger" style="padding: 4px 8px; font-size: 0.8rem;">حذف</button>
+                        </form>
+                    </td>
+                </tr>
+                {% else %}
+                <tr><td colspan="7">لا توجد بيانات حالياً. قم برفع ملف الـ Excel.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

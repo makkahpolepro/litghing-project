@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card" style="max-width: 400px; margin: auto;">
+    <h3>تسجيل دخول الإدارة</h3>
+    <form method="POST">
+        <label>اسم المستخدم:</label>
+        <input type="text" name="username" required value="admin">
+        
+        <label>كلمة المرور:</label>
+        <input type="password" name="password" required value="admin123">
+        
+        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px;">دخول لوحة التحكم</button>
+    </form>
+    <p style="margin-top: 15px; font-size: 0.9rem; color: #666;">بيانات تجريبية افتراضية: اسم المستخدم <code>admin</code> وكلمة المرور <code>admin123</code></p>
+</div>
+{% endblock %}
