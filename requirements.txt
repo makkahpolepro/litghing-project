@@ -1,10 +1,10 @@
-setuptools>=65.0.0
-wheel
-pip>=23.0
+
+
+
 Flask==3.0.2
 Flask-SQLAlchemy==3.1.1
 gunicorn==21.2.0
-werkzeug==3.0.1
-qrcode==7.4.2
-pandas==2.2.1
-openpyxl==3.1.2
+
+
+
+
